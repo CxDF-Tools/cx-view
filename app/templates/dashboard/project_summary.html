@@ -8,6 +8,18 @@
 <div class="card"><p class="error">Error: {{ error }}</p></div>
 {% else %}
 <div class="stats-grid">
+    <div class="stat-card stat-card-wide">
+        <p class="stat-label">Most Recently Scanned</p>
+        <p class="stat-value">{{ summary.last_scanned_project_name or "N/A" }}
+            <span class="stat-sub">{{ summary.last_scanned_at.strftime("%Y-%m-%d %H:%M") if summary.last_scanned_at else "" }}</span>
+        </p>
+    </div>
+    <div class="stat-card stat-card-wide">
+        <p class="stat-label">Most Recently Added</p>
+        <p class="stat-value">{{ summary.most_recently_added_name or "N/A" }}
+            <span class="stat-sub">{{ summary.most_recently_added_at.strftime("%Y-%m-%d %H:%M") if summary.most_recently_added_at else "" }}</span>
+        </p>
+    </div>
     <div class="stat-card">
         <p class="stat-label">Total Projects</p>
         <p class="stat-value">{{ summary.total_count }}</p>
@@ -16,18 +28,6 @@
         <p class="stat-label">First Project Added</p>
         <p class="stat-value">{{ summary.first_added_at.strftime("%Y-%m-%d") if summary.first_added_at else "N/A" }}
             <span class="stat-sub">{{ summary.first_added_at.strftime("%H:%M") if summary.first_added_at else "" }}</span>
-        </p>
-    </div>
-    <div class="stat-card">
-        <p class="stat-label">Most Recently Added</p>
-        <p class="stat-value">{{ summary.most_recently_added_name or "N/A" }}
-            <span class="stat-sub">{{ summary.most_recently_added_at.strftime("%Y-%m-%d %H:%M") if summary.most_recently_added_at else "" }}</span>
-        </p>
-    </div>
-    <div class="stat-card">
-        <p class="stat-label">Most Recently Scanned</p>
-        <p class="stat-value">{{ summary.last_scanned_project_name or "N/A" }}
-            <span class="stat-sub">{{ summary.last_scanned_at.strftime("%Y-%m-%d %H:%M") if summary.last_scanned_at else "" }}</span>
         </p>
     </div>
 </div>
