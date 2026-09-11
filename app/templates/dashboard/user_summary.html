@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}User Summary - CX-View{% endblock %}
+{% block content %}
+<h1>User Summary — {{ connection.tenant_name }}</h1>
+<p><a href="/dashboard">&larr; Back</a></p>
+
+{% if error %}
+<p class="error">Error: {{ error }}</p>
+{% else %}
+<p>Total users: {{ summary.total_count }}</p>
+<table class="users-table">
+    <thead>
+        <tr><th>Email</th><th>Username</th><th>Last Login</th></tr>
+    </thead>
+    <tbody>
+        {% for row in summary.recent_logins %}
+        <tr>
+            <td>{{ row.email or "N/A" }}</td>
+            <td>{{ row.username or "N/A" }}</td>
+            <td>{{ row.last_login.strftime("%Y-%m-%d %H:%M") if row.last_login else "unavailable" }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+{% endblock %}

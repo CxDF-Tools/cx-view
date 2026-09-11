@@ -1,0 +1,12 @@
+[
+  {
+    "FileName": "session.py",
+    "Line": 9,
+    "RuleID": 4009
+  },
+  {
+    "FileName": "test_cx_client_auth.py",
+    "Line": 54,
+    "RuleID": 4018
+  }
+]

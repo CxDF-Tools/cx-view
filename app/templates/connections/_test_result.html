@@ -1,0 +1,5 @@
+{% if ok %}
+<span class="test-ok">✓ {{ message }}{% if license_expiration_at %} (license expires {{ license_expiration_at.strftime("%Y-%m-%d") }}){% endif %}</span>
+{% else %}
+<span class="test-error">✗ {{ message }}</span>
+{% endif %}

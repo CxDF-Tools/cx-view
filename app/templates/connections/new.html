@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Add Connection - CX-View{% endblock %}
+{% block content %}
+<h1>Add Connection</h1>
+<form method="post" action="/connections/new">
+    <label>Tenant Name<br><input type="text" name="tenant_name" required></label><br><br>
+    <label>Tenant ID (realm)<br><input type="text" name="tenant_id" required></label><br><br>
+    <label>Base API URL<br><input type="url" name="base_api_url" placeholder="https://ast.checkmarx.net" required></label><br><br>
+    <label>IAM URL<br><input type="url" name="iam_url" placeholder="https://iam.checkmarx.net" required></label><br><br>
+
+    <label>Auth Method<br>
+        <select name="auth_method" id="auth_method" onchange="toggleAuthFields()">
+            <option value="refresh_token">Refresh Token</option>
+            <option value="client_credentials">Client Credentials</option>
+        </select>
+    </label><br><br>
+
+    <div id="refresh_token_fields">
+        <label>Refresh Token<br><input type="password" name="refresh_token"></label><br><br>
+    </div>
+    <div id="client_credentials_fields" style="display:none">
+        <label>Client ID<br><input type="text" name="client_id"></label><br><br>
+        <label>Client Secret<br><input type="password" name="client_secret"></label><br><br>
+    </div>
+
+    <button type="submit">Save</button>
+</form>
+<script src="/static/js/connections.js"></script>
+{% endblock %}

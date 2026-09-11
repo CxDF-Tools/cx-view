@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Project Summary - CX-View{% endblock %}
+{% block content %}
+<h1>Project Summary — {{ connection.tenant_name }}</h1>
+<p><a href="/dashboard">&larr; Back</a></p>
+
+{% if error %}
+<p class="error">Error: {{ error }}</p>
+{% else %}
+<ul>
+    <li>Total projects: {{ summary.total_count }}</li>
+    <li>First project added: {{ summary.first_added_at.strftime("%Y-%m-%d %H:%M") if summary.first_added_at else "N/A" }}</li>
+    <li>Most recently added project: {{ summary.most_recently_added_name or "N/A" }}
+        ({{ summary.most_recently_added_at.strftime("%Y-%m-%d %H:%M") if summary.most_recently_added_at else "N/A" }})</li>
+    <li>Most recently scanned project: {{ summary.last_scanned_project_name or "N/A" }}
+        ({{ summary.last_scanned_at.strftime("%Y-%m-%d %H:%M") if summary.last_scanned_at else "N/A" }})</li>
+</ul>
+{% endif %}
+{% endblock %}

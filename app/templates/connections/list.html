@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Connections - CX-View{% endblock %}
+{% block content %}
+<h1>Saved Connections</h1>
+<p><a href="/connections/new">+ Add Connection</a></p>
+
+{% if not connections %}
+    <p>No connections saved yet.</p>
+{% else %}
+<table class="connections-table">
+    <thead>
+        <tr>
+            <th>Tenant Name</th>
+            <th>Tenant ID</th>
+            <th>License Expiration</th>
+            <th>Last Verified</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for c in connections %}
+        <tr id="conn-row-{{ c.id }}">
+            <td>{{ c.tenant_name }}</td>
+            <td>{{ c.tenant_id }}</td>
+            <td>{{ c.license_expiration_at.strftime("%Y-%m-%d") if c.license_expiration_at else "Unknown" }}</td>
+            <td>{{ c.last_verified_at.strftime("%Y-%m-%d %H:%M") if c.last_verified_at else "Never" }}</td>
+            <td>{{ c.last_test_status or "-" }}</td>
+            <td class="actions">
+                <form method="post" action="/connections/{{ c.id }}/connect" style="display:inline">
+                    <button type="submit">Connect</button>
+                </form>
+                <button type="button" onclick="testConnection({{ c.id }})">Test</button>
+                <form method="post" action="/connections/{{ c.id }}/delete" style="display:inline"
+                      onsubmit="return confirm('Delete this connection?');">
+                    <button type="submit">Delete</button>
+                </form>
+                <div id="test-result-{{ c.id }}"></div>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+<script src="/static/js/connections.js"></script>
+{% endblock %}
