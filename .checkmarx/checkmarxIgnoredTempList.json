@@ -13,5 +13,10 @@
     "FileName": "test_server.py",
     "Line": 34,
     "RuleID": 4053
+  },
+  {
+    "FileName": "test_server.py",
+    "Line": 53,
+    "RuleID": 4053
   }
 ]

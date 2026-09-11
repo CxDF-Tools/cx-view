@@ -15,6 +15,10 @@ class NoAvailablePortError(RuntimeError):
 
 def _is_port_available(host: str, port: int) -> bool:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        # Match uvicorn/asyncio's own bind behavior: without SO_REUSEADDR, a port whose
+        # last connection is still draining through TIME_WAIT looks unavailable here
+        # even though uvicorn would happily bind to it, causing a false increment.
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         try:
             sock.bind((host, port))
         except OSError:
