@@ -56,6 +56,27 @@ def test_user_summary_excludes_filtered_emails_and_limits_to_five():
     assert emails[0] == "user7@example.com"
 
 
+def test_user_summary_sorts_most_recent_login_first_regardless_of_input_order():
+    client = MagicMock()
+    # Deliberately shuffled/out-of-order input to prove the sort isn't just input order.
+    client.list_users.return_value = [
+        CxUser(id="1", email="mid@example.com", username="mid", last_login=_dt(2024, 6, 1)),
+        CxUser(id="2", email="oldest@example.com", username="oldest", last_login=_dt(2024, 1, 1)),
+        CxUser(id="3", email="newest@example.com", username="newest", last_login=_dt(2024, 12, 1)),
+        CxUser(id="4", email="no-login@example.com", username="no-login", last_login=None),
+    ]
+
+    summary = build_user_summary(client)
+
+    emails_in_order = [row.email for row in summary.recent_logins]
+    assert emails_in_order == [
+        "newest@example.com",
+        "mid@example.com",
+        "oldest@example.com",
+        "no-login@example.com",
+    ]
+
+
 def test_user_summary_fewer_than_five_users():
     client = MagicMock()
     client.list_users.return_value = [
