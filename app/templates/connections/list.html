@@ -2,12 +2,16 @@
 {% block title %}Connections - CX-View{% endblock %}
 {% block content %}
 <h1>Saved Connections</h1>
-<p><a href="/connections/new">+ Add Connection</a></p>
+<p><a href="/connections/new" class="btn btn-primary">+ Add Connection</a></p>
 
 {% if not connections %}
-    <p>No connections saved yet.</p>
+<div class="card empty-state">
+    <div class="empty-icon">🔌</div>
+    <p>No connections saved yet. Add one to get started.</p>
+</div>
 {% else %}
-<table class="connections-table">
+<div class="card" style="padding: 0;">
+<table>
     <thead>
         <tr>
             <th>Tenant Name</th>
@@ -25,15 +29,23 @@
             <td>{{ c.tenant_id }}</td>
             <td>{{ c.license_expiration_at.strftime("%Y-%m-%d") if c.license_expiration_at else "Unknown" }}</td>
             <td>{{ c.last_verified_at.strftime("%Y-%m-%d %H:%M") if c.last_verified_at else "Never" }}</td>
-            <td>{{ c.last_test_status or "-" }}</td>
+            <td>
+                {% if c.last_test_status == "ok" %}
+                    <span class="badge badge-ok"><span class="status-dot status-dot-ok"></span>Connected</span>
+                {% elif c.last_test_status == "error" %}
+                    <span class="badge badge-error"><span class="status-dot status-dot-error"></span>Error</span>
+                {% else %}
+                    <span class="badge badge-neutral"><span class="status-dot status-dot-neutral"></span>Untested</span>
+                {% endif %}
+            </td>
             <td class="actions">
-                <form method="post" action="/connections/{{ c.id }}/connect" style="display:inline">
-                    <button type="submit">Connect</button>
+                <form method="post" action="/connections/{{ c.id }}/connect">
+                    <button type="submit" class="btn btn-primary">Connect</button>
                 </form>
-                <button type="button" onclick="testConnection({{ c.id }})">Test</button>
-                <form method="post" action="/connections/{{ c.id }}/delete" style="display:inline"
+                <button type="button" class="btn" onclick="testConnection({{ c.id }})">Test</button>
+                <form method="post" action="/connections/{{ c.id }}/delete"
                       onsubmit="return confirm('Delete this connection?');">
-                    <button type="submit">Delete</button>
+                    <button type="submit" class="btn btn-danger">Delete</button>
                 </form>
                 <div id="test-result-{{ c.id }}"></div>
             </td>
@@ -41,6 +53,7 @@
         {% endfor %}
     </tbody>
 </table>
+</div>
 {% endif %}
 <script src="/static/js/connections.js"></script>
 {% endblock %}

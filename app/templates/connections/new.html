@@ -1,29 +1,32 @@
 {% extends "base.html" %}
 {% block title %}Add Connection - CX-View{% endblock %}
 {% block content %}
+<a href="/" class="back-link">&larr; Back to connections</a>
 <h1>Add Connection</h1>
-<form method="post" action="/connections/new">
-    <label>Tenant Name<br><input type="text" name="tenant_name" required></label><br><br>
-    <label>Tenant ID (realm)<br><input type="text" name="tenant_id" required></label><br><br>
-    <label>Base API URL<br><input type="url" name="base_api_url" placeholder="https://ast.checkmarx.net" required></label><br><br>
-    <label>IAM URL<br><input type="url" name="iam_url" placeholder="https://iam.checkmarx.net" required></label><br><br>
+<div class="card">
+<form method="post" action="/connections/new" class="stacked">
+    <label>Tenant Name<input type="text" name="tenant_name" required></label>
+    <label>Tenant ID (realm)<input type="text" name="tenant_id" required></label>
+    <label>Base API URL<input type="url" name="base_api_url" placeholder="https://ast.checkmarx.net" required></label>
+    <label>IAM URL<input type="url" name="iam_url" placeholder="https://iam.checkmarx.net" required></label>
 
-    <label>Auth Method<br>
+    <label>Auth Method
         <select name="auth_method" id="auth_method" onchange="toggleAuthFields()">
             <option value="refresh_token">Refresh Token</option>
             <option value="client_credentials">Client Credentials</option>
         </select>
-    </label><br><br>
+    </label>
 
     <div id="refresh_token_fields">
-        <label>Refresh Token<br><input type="password" name="refresh_token"></label><br><br>
+        <label>Refresh Token<input type="password" name="refresh_token"></label>
     </div>
     <div id="client_credentials_fields" style="display:none">
-        <label>Client ID<br><input type="text" name="client_id"></label><br><br>
-        <label>Client Secret<br><input type="password" name="client_secret"></label><br><br>
+        <label>Client ID<input type="text" name="client_id"></label>
+        <label>Client Secret<input type="password" name="client_secret"></label>
     </div>
 
-    <button type="submit">Save</button>
+    <button type="submit" class="btn btn-primary">Save</button>
 </form>
+</div>
 <script src="/static/js/connections.js"></script>
 {% endblock %}

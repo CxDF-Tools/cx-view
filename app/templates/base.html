@@ -7,9 +7,15 @@
 </head>
 <body>
     <header class="topbar">
-        <a href="/" class="brand">CX-View</a>
+        <a href="/" class="brand">
+            <img src="/static/img/checkmarx-symbol.svg" alt="" class="brand-logo">
+            <span>CX-View</span>
+        </a>
         {% if connection is defined and connection %}
-            <span class="active-tenant">Connected: {{ connection.tenant_name }}</span>
+            <span class="active-tenant">
+                <span class="status-dot status-dot-ok"></span>
+                Connected: {{ connection.tenant_name }}
+            </span>
         {% endif %}
     </header>
     <main class="content">

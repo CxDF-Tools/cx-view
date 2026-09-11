@@ -1,7 +1,16 @@
 {% extends "base.html" %}
 {% block title %}Dashboard - CX-View{% endblock %}
 {% block content %}
+<a href="/" class="back-link">&larr; Back to connections</a>
 <h1>{{ connection.tenant_name }}</h1>
-<p><a href="/dashboard/projects">Project Summary</a></p>
-<p><a href="/dashboard/users">User Summary</a></p>
+<div class="choice-grid">
+    <a href="/dashboard/projects" class="choice-card">
+        📁 Project Summary
+        <span class="choice-desc">Counts, first/last added, most recently scanned</span>
+    </a>
+    <a href="/dashboard/users" class="choice-card">
+        👤 User Summary
+        <span class="choice-desc">Total users and most recent logins</span>
+    </a>
+</div>
 {% endblock %}
