@@ -13,6 +13,16 @@ PAGE_SIZE = 100
 MAX_PAGES = 50  # safety cap to avoid unbounded pagination on very large tenants
 
 
+def _extract_items(body, key: str) -> list:
+    """Checkmarx One list endpoints wrap results in an object like {"<key>": [...]}, but
+    for an empty tenant the field can be present with an explicit null rather than []
+    or an omitted key — dict.get(key, default) does not fall back to default in that case."""
+    if isinstance(body, list):
+        return body
+    value = body.get(key) if isinstance(body, dict) else None
+    return value if isinstance(value, list) else []
+
+
 def _parse_datetime(value: str | None) -> datetime | None:
     if not value:
         return None
@@ -76,8 +86,7 @@ class CheckmarxClient:
                 f"{self._base_api_url}/api/projects",
                 params={"offset": offset, "limit": PAGE_SIZE},
             )
-            body = response.json()
-            items = body.get("projects", body if isinstance(body, list) else [])
+            items = _extract_items(response.json(), "projects")
             if not items:
                 break
             for item in items:
@@ -98,8 +107,7 @@ class CheckmarxClient:
         if project_id:
             params["project-id"] = project_id
         response = self._get(f"{self._base_api_url}/api/scans", params=params)
-        body = response.json()
-        items = body.get("scans", body if isinstance(body, list) else [])
+        items = _extract_items(response.json(), "scans")
         return [
             Scan(
                 id=str(item.get("id")),
