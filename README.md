@@ -1,5 +1,7 @@
 # CX-View
 
+[![GitHub](https://img.shields.io/badge/GitHub-CxDF--Tools%2Fcx--view-181717?logo=github)](https://github.com/CxDF-Tools/cx-view)
+
 A local web dashboard for connecting to multiple Checkmarx One tenants and viewing
 project and user summaries.
 
