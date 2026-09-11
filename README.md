@@ -47,6 +47,62 @@ uvicorn app.main:app --reload --port 8000
 pytest
 ```
 
+## Local Data Storage
+
+CX-View stores its SQLite database and encryption keys in an OS-specific local
+app-data directory (via `platformdirs`), **not** inside the repo — this location is
+never tracked by git.
+
+| OS      | Location |
+|---------|----------|
+| macOS   | `~/Library/Application Support/cx-view/` |
+| Linux   | `$XDG_DATA_HOME/cx-view/` (typically `~/.local/share/cx-view/`) |
+| Windows | `%LOCALAPPDATA%\cx-view\cx-view\` (typically `C:\Users\<you>\AppData\Local\cx-view\cx-view\`) |
+
+That directory contains:
+
+- `cx_view.db` — the SQLite database (saved tenant connections; credential fields are
+  encrypted)
+- `secret.key` — the Fernet key used to encrypt/decrypt credentials (created on first
+  use)
+- `session.key` — the key used to sign the browser session cookie
+
+To confirm the exact path on your machine, run (from the project root, with the venv
+active):
+
+```bash
+python -c "from app.config import DB_PATH; print(DB_PATH)"
+```
+
+### Resetting / testing a fresh install
+
+Deleting the database is safe — the app recreates it automatically (with empty
+tables) the next time it starts, so there's nothing else to set up.
+
+**macOS**
+
+```bash
+rm "$HOME/Library/Application Support/cx-view/cx_view.db"
+```
+
+**Linux**
+
+```bash
+rm "${XDG_DATA_HOME:-$HOME/.local/share}/cx-view/cx_view.db"
+```
+
+**Windows (PowerShell)**
+
+```powershell
+Remove-Item "$env:LOCALAPPDATA\cx-view\cx-view\cx_view.db"
+```
+
+To simulate a completely fresh install (no saved connections *and* new encryption
+keys, meaning any old encrypted values would no longer be decryptable), delete the
+whole directory instead of just the `.db` file — e.g. on macOS:
+`rm -rf "$HOME/Library/Application Support/cx-view"` (swap in the Linux/Windows paths
+above as needed).
+
 ## Notes
 
 - Tenant credentials (refresh token / client secret) are encrypted at rest in a local
