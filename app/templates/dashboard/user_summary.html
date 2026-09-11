@@ -14,6 +14,18 @@
     </div>
 </div>
 
+<div class="tz-toolbar">
+    <label for="tz-select">Show times in:</label>
+    <select id="tz-select">
+        <option value="America/Chicago">Central Time</option>
+        <option value="America/New_York">Eastern Time</option>
+        <option value="America/Denver">Mountain Time</option>
+        <option value="America/Los_Angeles">Pacific Time</option>
+        <option value="UTC">UTC</option>
+        <option value="local">Local (this browser)</option>
+    </select>
+</div>
+
 <div class="card" style="padding: 0;">
 <table>
     <thead>
@@ -24,11 +36,18 @@
         <tr>
             <td>{{ row.email or "N/A" }}</td>
             <td>{{ row.username or "N/A" }}</td>
-            <td>{{ row.last_login.strftime("%Y-%m-%d %H:%M") if row.last_login else "unavailable" }}</td>
+            <td>
+                {% if row.last_login %}
+                <span class="dt" data-utc="{{ row.last_login.isoformat() }}">{{ row.last_login.strftime("%Y-%m-%d %H:%M") }} UTC</span>
+                {% else %}
+                unavailable
+                {% endif %}
+            </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
 </div>
 {% endif %}
+<script src="/static/js/timezone.js"></script>
 {% endblock %}
