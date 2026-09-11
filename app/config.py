@@ -1,7 +1,12 @@
 import os
 from pathlib import Path
 
+from dotenv import load_dotenv
 from platformdirs import user_data_dir
+
+# Loads variables from a .env file in the project root (if present) into the
+# environment, without overriding anything already set there.
+load_dotenv()
 
 APP_NAME = "cx-view"
 APP_AUTHOR = "cx-view"

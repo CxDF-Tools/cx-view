@@ -14,13 +14,22 @@ pip install -e ".[dev]"
 ## Run
 
 ```bash
+./run.sh
+```
+
+or directly:
+
+```bash
 python -m app.server
 ```
 
-Starts on port 8000 by default. If that port is already in use, it automatically
-tries 8001, 8002, etc. until it finds a free one (up to 50 attempts) — check the
-console output for the port actually used. Override the starting port with the
-`CX_VIEW_PORT` environment variable:
+Starts on the port set by `CX_VIEW_PORT` in the `.env` file at the repo root
+(defaults to `8000` if unset). If that port is already in use, it automatically
+tries the next one up (8001, 8002, ...) until it finds a free one (up to 50
+attempts) — check the console output for the port actually used.
+
+To change the starting port, edit `CX_VIEW_PORT` in `.env`, or override it for a
+single run:
 
 ```bash
 CX_VIEW_PORT=9000 python -m app.server
