@@ -26,11 +26,8 @@ def get_active_connection(request: Request, db: Session = Depends(get_db)) -> Co
     return conn
 
 
-def build_cx_client(db: Session, conn: Connection) -> CheckmarxClient:
+def build_cx_client(conn: Connection) -> CheckmarxClient:
     creds = crud.decrypted_credentials(conn)
-
-    def _persist_new_refresh_token(new_token: str) -> None:
-        crud.update_refresh_token(db, conn.id, new_token)
 
     token_manager = TokenManager(
         iam_url=conn.iam_url,
@@ -39,7 +36,6 @@ def build_cx_client(db: Session, conn: Connection) -> CheckmarxClient:
         refresh_token=creds["refresh_token"],
         client_id=creds["client_id"],
         client_secret=creds["client_secret"],
-        on_new_refresh_token=_persist_new_refresh_token if conn.auth_method == "refresh_token" else None,
     )
     return CheckmarxClient(
         base_api_url=conn.base_api_url,
@@ -49,7 +45,5 @@ def build_cx_client(db: Session, conn: Connection) -> CheckmarxClient:
     )
 
 
-def get_cx_client(
-    db: Session = Depends(get_db), conn: Connection = Depends(get_active_connection)
-) -> CheckmarxClient:
-    return build_cx_client(db, conn)
+def get_cx_client(conn: Connection = Depends(get_active_connection)) -> CheckmarxClient:
+    return build_cx_client(conn)

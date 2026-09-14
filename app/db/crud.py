@@ -57,13 +57,6 @@ def decrypted_credentials(conn: Connection) -> dict[str, str | None]:
     }
 
 
-def update_refresh_token(db: Session, connection_id: int, new_refresh_token: str) -> None:
-    conn = db.get(Connection, connection_id)
-    if conn is not None:
-        conn.refresh_token_enc = encrypt_str(new_refresh_token)
-        db.commit()
-
-
 def record_test_result(
     db: Session,
     connection_id: int,

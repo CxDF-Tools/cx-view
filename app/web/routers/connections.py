@@ -55,7 +55,7 @@ def _test_connection_result(db: Session, connection_id: int) -> dict:
     conn = crud.get_connection(db, connection_id)
     if conn is None:
         return {"ok": False, "message": "Connection not found"}
-    client = build_cx_client(db, conn)
+    client = build_cx_client(conn)
     try:
         ok, message, license_expiration_at = client.test_connection()
     except (CxAuthError, CxConnectionError, CxApiError) as exc:

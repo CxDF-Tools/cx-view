@@ -4,7 +4,6 @@ import logging
 import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Callable
 
 import httpx
 
@@ -20,7 +19,6 @@ class TokenResult:
     access_token: str
     expires_at: float
     license_expiration: datetime | None
-    new_refresh_token: str | None
 
 
 def _decode_jwt_claims(token: str) -> dict:
@@ -47,6 +45,15 @@ class TokenManager:
 
     Supports both the refresh-token grant and the client-credentials grant against
     the Keycloak-based IAM token endpoint.
+
+    Checkmarx One's "API Key" is a long-lived, stable credential meant to be reused
+    indefinitely (the official cx CLI always sends back the same original value it
+    was configured with). Keycloak's token response also includes a short-lived
+    rotated `refresh_token` field, but that one is NOT the API Key and expires in
+    hours if unused — treating it as a replacement for the original API Key (as an
+    earlier version of this class did) silently breaks the connection once that
+    rotated token's own short window elapses. So we always re-send the original
+    refresh_token we were constructed with, and ignore whatever comes back.
     """
 
     def __init__(
@@ -58,7 +65,6 @@ class TokenManager:
         refresh_token: str | None = None,
         client_id: str | None = None,
         client_secret: str | None = None,
-        on_new_refresh_token: Callable[[str], None] | None = None,
         http_client: httpx.Client | None = None,
     ):
         if auth_method not in ("refresh_token", "client_credentials"):
@@ -74,7 +80,6 @@ class TokenManager:
         self._refresh_token = refresh_token
         self._client_id = client_id
         self._client_secret = client_secret
-        self._on_new_refresh_token = on_new_refresh_token
         self._http = http_client or httpx.Client(timeout=15.0)
         self._owns_http_client = http_client is None
 
@@ -98,9 +103,6 @@ class TokenManager:
         self._expires_at = result.expires_at
         if result.license_expiration is not None:
             self.latest_license_expiration = result.license_expiration
-        if result.new_refresh_token and self._on_new_refresh_token is not None:
-            self._refresh_token = result.new_refresh_token
-            self._on_new_refresh_token(result.new_refresh_token)
         return self._access_token
 
     def _fetch_token(self) -> TokenResult:
@@ -138,11 +140,9 @@ class TokenManager:
         expires_in = body.get("expires_in", 300)
         claims = _decode_jwt_claims(access_token)
         license_expiration = _extract_license_expiration(claims)
-        new_refresh_token = body.get("refresh_token")
 
         return TokenResult(
             access_token=access_token,
             expires_at=time.time() + expires_in,
             license_expiration=license_expiration,
-            new_refresh_token=new_refresh_token,
         )

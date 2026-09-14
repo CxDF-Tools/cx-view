@@ -112,6 +112,37 @@ def test_token_is_cached_until_near_expiry():
     assert call_count["n"] == 2
 
 
+def test_original_refresh_token_is_always_reused_not_the_rotated_one():
+    """Checkmarx's API Key (the refresh_token users paste in) is meant to be a stable,
+    long-lived credential reused on every call, like the official cx CLI does. Keycloak's
+    response also includes a short-lived rotated `refresh_token` field; TokenManager must
+    NOT adopt it as a replacement, or the connection breaks once that rotated token's own
+    (much shorter) lifetime elapses."""
+    access_token = _make_jwt({})
+    sent_refresh_tokens = []
+
+    def handler(request):
+        body = request.read().decode()
+        sent_refresh_tokens.append(dict(part.split("=") for part in body.split("&"))["refresh_token"])
+        return httpx.Response(
+            200,
+            json={"access_token": access_token, "expires_in": 300, "refresh_token": "rotated-ephemeral-token"},
+        )
+
+    tm = TokenManager(
+        iam_url="https://iam.example.com",
+        tenant_id="acme",
+        auth_method="refresh_token",
+        refresh_token="original-stable-api-key",
+        http_client=_mock_client(handler),
+    )
+    tm.get_access_token()
+    tm._expires_at = time.time() - 1  # force a second token fetch
+    tm.get_access_token()
+
+    assert sent_refresh_tokens == ["original-stable-api-key", "original-stable-api-key"]
+
+
 def test_missing_credentials_raise_value_error():
     with pytest.raises(ValueError):
         TokenManager(iam_url="https://iam.example.com", tenant_id="acme", auth_method="refresh_token")
